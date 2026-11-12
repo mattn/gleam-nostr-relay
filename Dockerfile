@@ -18,8 +18,10 @@ COPY public /app/public
 
 USER relay
 WORKDIR /app
+# Keep the BEAM small: few schedulers and dirty threads, best-fit allocators.
 ENV PORT=8080 \
-    WEB_ROOT=/app/public
+    WEB_ROOT=/app/public \
+    ERL_FLAGS="+S 1:1 +SDcpu 1:1 +SDio 2 +MBas aobf +MHas aobf"
 EXPOSE 8080
 
 # Set DATABASE_URL (postgres://user:pass@host:port/db).

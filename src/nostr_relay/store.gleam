@@ -32,7 +32,7 @@ pub fn connect(database_url: String) -> Result(pog.Connection, String) {
       ..config,
       user: percent_decode(config.user),
       password: option.map(config.password, percent_decode),
-      pool_size: 10,
+      pool_size: 3,
     )
   pog.start(config)
   |> result.map(fn(started) { started.data })
