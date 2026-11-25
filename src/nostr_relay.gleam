@@ -25,8 +25,6 @@ pub fn main() -> Nil {
   let assert Ok(hub) = hub.start()
   let ctx = Context(db:, hub:)
 
-  process.spawn(fn() { expire_loop(ctx) })
-
   let assert Ok(_) =
     mist.new(fn(req) { handle_request(cfg, ctx, req) })
     |> mist.bind("0.0.0.0")
@@ -54,20 +52,6 @@ fn migrate(db, attempts: Int) -> Nil {
     }
     Error(e) -> panic as { "migration failed: " <> string.inspect(e) }
   }
-}
-
-fn expire_loop(ctx: Context) -> Nil {
-  process.sleep(3_600_000)
-  case store.delete_expired(ctx.db, relay.now()) {
-    Ok(n) if n > 0 ->
-      logging.log(
-        logging.Info,
-        "deleted " <> int.to_string(n) <> " expired events",
-      )
-    Ok(_) -> Nil
-    Error(e) -> logging.log(logging.Warning, e)
-  }
-  expire_loop(ctx)
 }
 
 fn header_contains(req: Request(a), name: String, value: String) -> Bool {
