@@ -347,14 +347,3 @@ pub fn count(
   |> result.map(fn(r) { list.first(r.rows) |> result.unwrap(0) })
   |> result.map_error(describe)
 }
-
-/// Remove events whose NIP-40 expiration has passed.
-pub fn delete_expired(db: pog.Connection, now: Int) -> Result(Int, String) {
-  pog.query(
-    "DELETE FROM event WHERE expiration IS NOT NULL AND expiration <= $1",
-  )
-  |> pog.parameter(pog.int(now))
-  |> pog.execute(db)
-  |> result.map(fn(r) { r.count })
-  |> result.map_error(describe)
-}
